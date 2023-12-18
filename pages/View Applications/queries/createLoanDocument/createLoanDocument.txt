@@ -1,0 +1,1 @@
+insert into loan_document (loan_application_id, document_type, issue_date, expiry_date, data) values ({{this.params.loanId}}, 'Loan Document', '1997-04-30T00:22:52Z', '2028-05-30T15:30:00Z', {{this.params.document}});

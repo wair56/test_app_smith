@@ -1,0 +1,44 @@
+{
+    "boxShadow": "none",
+    "widgetName": "icn_imageSwitchLeft",
+    "onClick": "{{utils.handleDocumentSwitch('DECREASE')}}",
+    "buttonColor": "{{appsmith.theme.colors.primaryColor}}",
+    "dynamicPropertyPathList": [
+        {"key": "onClick"},
+        {"key": "isDisabled"}
+    ],
+    "displayName": "Icon Button",
+    "iconSVG": "/static/media/icon.1a0c634ac75f9fa6b6ae7a8df882a3ba.svg",
+    "searchTags": [
+        "click",
+        "submit"
+    ],
+    "topRow": 32,
+    "bottomRow": 39,
+    "parentRowSpace": 10,
+    "type": "ICON_BUTTON_WIDGET",
+    "hideCard": false,
+    "animateLoading": true,
+    "parentColumnSpace": 18.8125,
+    "dynamicTriggerPathList": [{"key": "onClick"}],
+    "leftColumn": 2,
+    "dynamicBindingPathList": [
+        {"key": "buttonColor"},
+        {"key": "borderRadius"},
+        {"key": "isDisabled"}
+    ],
+    "isDisabled": "{{appsmith.store.docIndex === 0}}",
+    "key": "82cgmpfsd9",
+    "isDeprecated": false,
+    "rightColumn": 8,
+    "iconName": "caret-left",
+    "widgetId": "guygn4cat3",
+    "minWidth": 50,
+    "isVisible": true,
+    "version": 1,
+    "parentId": "af86ehajjy",
+    "renderMode": "CANVAS",
+    "isLoading": false,
+    "borderRadius": "{{appsmith.theme.borderRadius.appBorderRadius}}",
+    "buttonVariant": "TERTIARY"
+}

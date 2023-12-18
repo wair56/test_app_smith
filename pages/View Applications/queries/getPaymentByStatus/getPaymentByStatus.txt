@@ -1,0 +1,4 @@
+SELECT loan_application.*, loan_payment.amount AS payment_amount, loan_payment.payment_date, loan_payment.status AS payment_status
+FROM loan_application 
+INNER JOIN loan_payment ON loan_payment.loan_application_id = loan_application.id 
+WHERE loan_application.status = {{this.params.status}};

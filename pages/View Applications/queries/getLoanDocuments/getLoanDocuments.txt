@@ -1,0 +1,1 @@
+SELECT * FROM loan_document WHERE loan_application_id = {{tbl_applications.selectedRow.Id}};

@@ -1,0 +1,3 @@
+insert into loan_application (first_name, last_name, email, gender, phone, date_of_birth, address, credit_product, amount_requested, term, interest, repayment_period, trn_number, monthly_income, credit_score, credit_risk, credit_default, status, image_url) values ({{inp_fullName.text.split(' ')[0] || ''}}, {{inp_fullName.text.split(' ')[1] || ''}}, {{inp_email.text}}, {{sel_gender.selectedOptionValue}}, {{inp_phone.text}}, {{dat_dob.formattedDate}}, {{inp_address.text}}, {{sel_creditProduct.selectedOptionValue}}, {{cur_amountRequested.value}}, {{sel_loanTerm.selectedOptionValue}}, {{parseInt(inp_interest.text)}}, 'monthly', {{inp_trnNo.text}}, {{cur_monthlyIncome.value}}, 178, 'High', 27, 'Waiting for Approval', {{this.params.imageUrl}})
+RETURNING id
+;

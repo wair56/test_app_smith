@@ -1,0 +1,118 @@
+{
+  "unpublishedPage": {
+    "name": "View Applications",
+    "slug": "view-applications",
+    "layouts": [
+      {
+        "viewMode": false,
+        "dsl": {
+          "widgetName": "MainContainer",
+          "backgroundColor": "none",
+          "rightColumn": 4896,
+          "snapColumns": 64,
+          "detachFromLayout": true,
+          "widgetId": "0",
+          "topRow": 0,
+          "bottomRow": 1340,
+          "containerStyle": "none",
+          "snapRows": 124,
+          "parentRowSpace": 1,
+          "type": "CANVAS_WIDGET",
+          "canExtend": true,
+          "version": 87,
+          "minHeight": 1292,
+          "dynamicTriggerPathList": [],
+          "parentColumnSpace": 1,
+          "dynamicBindingPathList": [],
+          "leftColumn": 0
+        },
+        "layoutOnLoadActions": [
+          [
+            {
+              "id": "View Applications_utils.userPayments",
+              "name": "utils.userPayments",
+              "collectionId": "View Applications_utils",
+              "confirmBeforeExecute": false,
+              "pluginType": "JS",
+              "jsonPathKeys": [
+                "async () => {\n  const payments = await getUserPayments.run();\n  return payments.map(p => {\n    return {\n      Date: p.payment_date,\n      Principal: p.principal,\n      Interest: p.interest,\n      Amount: p.amount,\n      Status: p.status\n    };\n  });\n}"
+              ],
+              "timeoutInMillisecond": 10000
+            }
+          ],
+          [
+            {
+              "id": "View Applications_getUserPayments",
+              "name": "getUserPayments",
+              "confirmBeforeExecute": false,
+              "pluginType": "DB",
+              "jsonPathKeys": [
+                "tbl_applications.selectedRow.Id"
+              ],
+              "timeoutInMillisecond": 10000
+            },
+            {
+              "id": "View Applications_utils.initialize",
+              "name": "utils.initialize",
+              "collectionId": "View Applications_utils",
+              "confirmBeforeExecute": false,
+              "pluginType": "JS",
+              "jsonPathKeys": [
+                "() => {\n  storeValue('docIndex', 0);\n}"
+              ],
+              "timeoutInMillisecond": 10000
+            }
+          ],
+          [
+            {
+              "id": "View Applications_utils.getApplications",
+              "name": "utils.getApplications",
+              "collectionId": "View Applications_utils",
+              "confirmBeforeExecute": false,
+              "pluginType": "JS",
+              "jsonPathKeys": [
+                "async () => {\n  const applications = await getApplications.run();\n  const status = sel_status.selectedOptionValue;\n  const date = sel_date.selectedOptionValue;\n  let filteredApplications = applications;\n  if (status) {\n    filteredApplications = applications.filter(a => a.status === status);\n  }\n  if (date) {\n    if (date === 'Today') {\n      const now = moment;\n      filteredApplications = applications.filter(a => moment(a.created).isSame(now, 'day'));\n    }\n    if (date === 'Yesterday') {\n      const yesterday = moment().subtract(1, 'day').startOf('day');\n      filteredApplications = applications.filter(a => moment(a.created).isSame(yesterday, 'day'));\n    }\n    if (date === '7 days') {\n      const last7Days = moment().subtract(7, 'day').startOf('day');\n      filteredApplications = applications.filter(a => moment(a.created).isAfter(last7Days, 'day'));\n    }\n    if (date === '30 days') {\n      const last30Days = moment().subtract(30, 'day').startOf('day');\n      filteredApplications = applications.filter(a => moment(a.created).isAfter(last30Days, 'day'));\n    }\n    if (date === '3 months') {\n      const last3Months = moment().subtract(90, 'day').startOf('day');\n      filteredApplications = applications.filter(a => moment(a.created).isAfter(last3Months, 'day'));\n    }\n  }\n  return filteredApplications.map(a => {\n    return {\n      Id: a.id,\n      Name: a.first_name + ' ' + a.last_name,\n      Amount: a.amount_requested.toLocaleString('en-US', {\n        style: 'currency',\n        currency: 'USD'\n      }),\n      AppliedOn: new Date(a.created).toDateString(),\n      Status: a.status,\n      Email: a.email,\n      Phone: a.phone,\n      DOB: a.date_of_birth,\n      Gender: a.gender,\n      Address: a.address,\n      CreditProduct: a.credit_product,\n      Term: parseInt(a.term),\n      Interest: a.interest,\n      RepaymentPeriod: a.repayment_period,\n      TRN_No: a.trn_number,\n      MonthlyIncome: parseInt(a.monthly_income).toLocaleString('en-US', {\n        style: 'currency',\n        currency: 'USD'\n      }),\n      AmountOffered: a.amount_offered ? a.amount_offered.toLocaleString('en-US', {\n        style: 'currency',\n        currency: 'USD'\n      }) : '',\n      CreditScore: a.credit_score,\n      CreditRisk: a.credit_risk,\n      CreditDefault: a.credit_default,\n      Bank: a.bank_name,\n      BankNo: a.bank_code || '',\n      BankAccount: a.bank_account_no || '',\n      BankAccountType: a.bank_account_type || '',\n      Image: a.image_url,\n      Created: a.created\n    };\n  });\n}"
+              ],
+              "timeoutInMillisecond": 10000
+            },
+            {
+              "id": "View Applications_utils.userToken",
+              "name": "utils.userToken",
+              "collectionId": "View Applications_utils",
+              "confirmBeforeExecute": false,
+              "pluginType": "JS",
+              "jsonPathKeys": [
+                "async () => {\n  const token = appsmith.store.token;\n  return jsonwebtoken.decode(token, 'secret');\n}"
+              ],
+              "timeoutInMillisecond": 10000
+            }
+          ],
+          [
+            {
+              "id": "View Applications_utils.dashboardData",
+              "name": "utils.dashboardData",
+              "collectionId": "View Applications_utils",
+              "confirmBeforeExecute": false,
+              "pluginType": "JS",
+              "jsonPathKeys": [
+                "async () => {\n  const allPayments = await getAllUserPayments.run();\n  const allApplications = await getAllApplications.run();\n  const paidPayments = allPayments.filter(payment => payment.status === 'Paid');\n  const totalAmountCollected = paidPayments.reduce((total, payment) => total + payment.amount, 0);\n  const disbursedAmount = allApplications.reduce((total, payment) => total + payment.amount_offered, 0);\n  const latePayments = await getPaymentByStatus.run({\n    status: 'Late'\n  });\n  const atRiskPayments = await getPaymentByStatus.run({\n    status: 'At Risk'\n  });\n  const closedPayments = await getPaymentByStatus.run({\n    status: 'Closed'\n  });\n  const lossPayments = closedPayments.filter(p => p.payment_status === 'Unpaid');\n  const latePaymentCount = latePayments.reduce((total, payment) => total + payment.payment_amount, 0);\n  const atRiskPaymentCount = atRiskPayments.reduce((total, payment) => total + payment.payment_amount, 0);\n  const lossPaymentsCount = lossPayments.reduce((total, payment) => total + payment.payment_amount, 0);\n  const today = new Date();\n  const lastMonthStart = new Date(today.getFullYear(), 2, 1);\n  const lastMonthEnd = new Date(today.getFullYear(), 3, 0);\n  const thisMonthStart = new Date(today.getFullYear(), 3, 1);\n  const lastMonthPayments = paidPayments.filter(payment => {\n    const paymentDate = new Date(payment.payment_date);\n    return paymentDate >= lastMonthStart && paymentDate <= lastMonthEnd;\n  });\n  const thisMonthPayments = paidPayments.filter(payment => {\n    const paymentDate = new Date(payment.payment_date);\n    return paymentDate >= thisMonthStart;\n  });\n  const lastMonthAmountCollected = lastMonthPayments.reduce((total, payment) => total + payment.amount, 0);\n  const thisMonthAmountCollected = thisMonthPayments.reduce((total, payment) => total + payment.amount, 0);\n  const percentageDifference = (thisMonthAmountCollected - lastMonthAmountCollected) / lastMonthAmountCollected * 100;\n  const lastMonthDisbursement = allApplications.filter(payment => {\n    const paymentDate = new Date(payment.created);\n    return paymentDate >= lastMonthStart && paymentDate <= lastMonthEnd;\n  });\n  const thisMonthDisbursement = allApplications.filter(payment => {\n    const paymentDate = new Date(payment.created);\n    return paymentDate >= thisMonthStart;\n  });\n  const lastMonthAmountDisbursed = lastMonthDisbursement.reduce((total, payment) => total + payment.amount_offered, 0);\n  const thisMonthAmountDisbursed = thisMonthDisbursement.reduce((total, payment) => total + payment.amount_offered, 0);\n  const percentageDifferenceDisbursed = (thisMonthAmountDisbursed - lastMonthAmountDisbursed) / lastMonthAmountDisbursed * 100;\n  const lastMonthLatePayments = latePayments.filter(payment => {\n    const paymentDate = new Date(payment.payment_date);\n    return paymentDate >= lastMonthStart && paymentDate <= lastMonthEnd;\n  });\n  const thisMonthLatePayments = latePayments.filter(payment => {\n    const paymentDate = new Date(payment.payment_date);\n    return paymentDate >= thisMonthStart;\n  });\n  const lastMonthLatePayment = lastMonthLatePayments.reduce((total, payment) => total + payment.payment_amount, 0);\n  const thisMonthLatePayment = thisMonthLatePayments.reduce((total, payment) => total + payment.payment_amount, 0);\n  const percentageDifferenceLatePayment = (thisMonthLatePayment - lastMonthLatePayment) / lastMonthLatePayment * 100;\n  const lastMonthAtRiskPayments = atRiskPayments.filter(payment => {\n    const paymentDate = new Date(payment.payment_date);\n    return paymentDate >= lastMonthStart && paymentDate <= lastMonthEnd;\n  });\n  const thisMonthAtRiskPayments = atRiskPayments.filter(payment => {\n    const paymentDate = new Date(payment.payment_date);\n    return paymentDate >= thisMonthStart;\n  });\n  const lastMonthAtRiskPayment = lastMonthAtRiskPayments.reduce((total, payment) => total + payment.payment_amount, 0);\n  const thisMonthAtRiskPayment = thisMonthAtRiskPayments.reduce((total, payment) => total + payment.payment_amount, 0);\n  const percentageDifferenceAtRiskPayment = (thisMonthAtRiskPayment - lastMonthAtRiskPayment) / lastMonthAtRiskPayment * 100;\n  const lastMonthLossPayments = lossPayments.filter(payment => {\n    const paymentDate = new Date(payment.payment_date);\n    return paymentDate >= lastMonthStart && paymentDate <= lastMonthEnd;\n  });\n  const thisMonthLossPayments = lossPayments.filter(payment => {\n    const paymentDate = new Date(payment.payment_date);\n    return paymentDate >= thisMonthStart;\n  });\n  const lastMonthLossPayment = lastMonthLossPayments.reduce((total, payment) => total + payment.payment_amount, 0);\n  const thisMonthLossPayment = thisMonthLossPayments.reduce((total, payment) => total + payment.payment_amount, 0);\n  const percentageDifferenceLossPayment = (thisMonthLossPayment - lastMonthLossPayment) / lastMonthLossPayment * 100;\n  return {\n    amountRepaid: totalAmountCollected.toLocaleString('en-US', {\n      style: 'currency',\n      currency: 'USD'\n    }),\n    repaidDiff: percentageDifference.toFixed(2),\n    disbursedAmount: disbursedAmount.toLocaleString('en-US', {\n      style: 'currency',\n      currency: 'USD'\n    }),\n    disbursedDiff: percentageDifferenceDisbursed.toFixed(2),\n    latePayment: latePaymentCount.toLocaleString('en-US', {\n      style: 'currency',\n      currency: 'USD'\n    }),\n    latePaymentDiff: percentageDifferenceLatePayment.toFixed(2),\n    atRiskPayment: atRiskPaymentCount.toLocaleString('en-US', {\n      style: 'currency',\n      currency: 'USD'\n    }),\n    atRiskPaymentDiff: percentageDifferenceAtRiskPayment.toFixed(2),\n    lossPayments: lossPaymentsCount.toLocaleString('en-US', {\n      style: 'currency',\n      currency: 'USD'\n    }),\n    lossPaymentDiff: percentageDifferenceLossPayment.toFixed(2)\n  };\n}"
+              ],
+              "timeoutInMillisecond": 10000
+            }
+          ]
+        ],
+        "layoutOnLoadActionErrors": [],
+        "validOnPageLoadActions": true,
+        "id": "View Applications",
+        "deleted": false,
+        "policies": [],
+        "userPermissions": []
+      }
+    ],
+    "userPermissions": [],
+    "policies": [],
+    "isHidden": true
+  },
+  "deleted": false,
+  "gitSyncId": "65800d0226b5571d82bbcda4_65800d134955c94d18c28e0a"
+}

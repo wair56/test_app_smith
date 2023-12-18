@@ -1,0 +1,6 @@
+UPDATE loan_application
+  SET bank_name = {{inp_bankName.text}},
+	bank_code = {{inp_institutionNo.text}},
+	bank_account_no = {{inp_accountNumber.text}},
+	bank_account_type = {{sel_accountType.selectedOptionValue}}
+  WHERE id = {{ tbl_applications.selectedRow.Id }};
